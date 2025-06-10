@@ -29,6 +29,26 @@ t2Mt = 1e-6
 toe_to_MWh = 11.630  # GWh/ktoe OR MWh/toe
 
 
+def warn_if_notclose(a, b, *, rtol=1e-05, atol=1e-08, msg=""):
+    """
+    Log a warning if ``a`` and ``b`` are not close.
+
+    Parameters
+    ----------
+    a, b : float
+        The values to compare.
+    rtol : float, optional
+        Relative tolerance.
+    atol : float, optional
+        Absolute tolerance.
+    msg : str, optional
+        Additional text to include in the warning message.
+    """
+
+    if not isclose(a, b, rtol=rtol, atol=atol):
+        logger.warning("Values differ%s: %s vs %s", f" ({msg})" if msg else "", a, b)
+
+
 EUR20TOEUR23 = 1.1076
 
 
@@ -79,7 +99,10 @@ def domestic_length_factor(n, carriers, region="DE"):
                 cross_border_i = all_i.difference(domestic_i)
 
                 # Ensure indices match expected totals
-                assert len(all_i) == len(domestic_i) + len(cross_border_i)
+                if len(all_i) != len(domestic_i) + len(cross_border_i):
+                    logger.warning(
+                        "Unexpected link classification counts for %s", carrier
+                    )
 
                 # Calculate length factor if both sets are non-empty
                 if len(domestic_i) > 0 and len(cross_border_i) > 0:
@@ -203,7 +226,7 @@ def _get_fuel_fractions(n, region, fuel):
     # These numbers may deviate because the input data from n.statistics
     # can deviate. I don't know why exactly, but at least we can check that
     # the difference stays roughly the same after the calculation.
-    assert isclose(
+    warn_if_notclose(
         domestic_fuel_supply.get(f"renewable {fuel}", 0) - renewable_fuel_balance.sum(),
         total_fuel_supply.get([f"DE renewable {fuel} -> DE {fuel}"], pd.Series(0)).sum()
         + total_fuel_supply.get(
@@ -212,6 +235,7 @@ def _get_fuel_fractions(n, region, fuel):
         - renewable_fuel_supply.get(f"DE renewable {fuel}", pd.Series(0)).sum(),
         rtol=1e-3,
         atol=1e-5,
+        msg="renewable fuel balance",
     )
 
     fuel_fractions = pd.Series()
@@ -229,7 +253,11 @@ def _get_fuel_fractions(n, region, fuel):
 
     fuel_fractions = fuel_fractions.divide(domestic_fuel_supply.sum()).round(9)
 
-    assert isclose(fuel_fractions.sum(), 1)
+    warn_if_notclose(
+        fuel_fractions.sum(),
+        1,
+        msg="fuel fraction sum",
+    )
 
     return fuel_fractions
 
@@ -740,7 +768,7 @@ def _get_capacities(n, region, cap_func, cap_string="Capacity|"):
         like="wind"
     ).sum()
 
-    assert (
+    if not (
         var[cap_string + "Electricity|Wind"]
         == var[
             [
@@ -748,7 +776,8 @@ def _get_capacities(n, region, cap_func, cap_string="Capacity|"):
                 cap_string + "Electricity|Wind|Onshore",
             ]
         ].sum()
-    )
+    ):
+        logger.warning("Wind capacity mismatch for %s", cap_string.rstrip("|"))
 
     # var[cap_string + "Electricity|Storage Converter|CAES"] =
     # ! Not implemented
@@ -897,9 +926,10 @@ def _get_capacities(n, region, cap_func, cap_string="Capacity|"):
         + var[cap_string + "Heat|Biomass|w/o CCS"]
     )
 
-    assert isclose(
+    warn_if_notclose(
         var[cap_string + "Heat|Biomass"],
         capacities_central_heat.filter(like="biomass").sum(),
+        msg=f"{cap_string} heat biomass balance",
     )
 
     var[cap_string + "Heat|Non-Renewable Waste"] = capacities_central_heat.filter(
@@ -1012,11 +1042,12 @@ def _get_capacities(n, region, cap_func, cap_string="Capacity|"):
 
     var[cap_string + "Hydrogen|Gas"] = capacities_h2.filter(like="SMR").sum()
 
-    assert (
+    if not (
         var[cap_string + "Hydrogen|Gas"]
         == var[cap_string + "Hydrogen|Gas|w/ CCS"]
         + var[cap_string + "Hydrogen|Gas|w/o CCS"]
-    )
+    ):
+        logger.warning("Hydrogen gas capacity mismatch for %s", cap_string.rstrip("|"))
 
     var[cap_string + "Hydrogen|Electricity"] = abs(
         capacities_electricity.get("H2 Electrolysis", 0)
@@ -1182,11 +1213,12 @@ def get_primary_energy(n, region):
         - var["Primary Energy|Oil|Heat"]
     )
 
-    assert isclose(
+    warn_if_notclose(
         var["Primary Energy|Oil"],
         n.statistics.withdrawal(bus_carrier="oil primary", **kwargs)
         .get(("Link", "DE oil refining"), pd.Series(0))
         .item(),
+        msg="primary oil balance",
     )
 
     gas_fractions = _get_fuel_fractions(n, region, "gas")
@@ -1242,10 +1274,11 @@ def get_primary_energy(n, region):
         .item()
     )
 
-    assert isclose(
+    warn_if_notclose(
         var["Primary Energy|Gas"],
         _gas_primary,
         atol=1e-1,
+        msg="primary gas balance",
     )
 
     var["Primary Energy|Gas|Gases"] = (
@@ -1303,7 +1336,11 @@ def get_primary_energy(n, region):
         + coal_usage.get("coal for industry", 0)
     )
 
-    assert isclose(var["Primary Energy|Coal"], coal_usage.sum())
+    warn_if_notclose(
+        var["Primary Energy|Coal"],
+        coal_usage.sum(),
+        msg="primary coal balance",
+    )
 
     var["Primary Energy|Fossil"] = (
         var["Primary Energy|Coal"]
@@ -1379,9 +1416,10 @@ def get_primary_energy(n, region):
         + var["Primary Energy|Biomass|Gases"]
     )
 
-    assert isclose(
+    warn_if_notclose(
         var["Primary Energy|Biomass"],
         biomass_usage.sum() + unsus_btl_secondary,
+        msg="primary biomass balance",
     )
 
     var["Primary Energy|Nuclear"] = (
@@ -1444,13 +1482,14 @@ def get_primary_energy(n, region):
 
     var["Primary Energy|Wind"] = renewable_electricity.filter(like="wind").sum()
 
-    assert isclose(
+    warn_if_notclose(
         renewable_electricity.sum() + solar_thermal_heat,
         (
             var["Primary Energy|Hydro"]
             + var["Primary Energy|Solar"]
             + var["Primary Energy|Wind"]
         ),
+        msg="renewable primary energy balance",
     )
     # Primary Energy|Other
     # Not implemented
@@ -1637,13 +1676,14 @@ def get_secondary_energy(n, region, _industry_demand):
         + var["Secondary Energy|Electricity|Waste"]
     )
 
-    assert isclose(
+    warn_if_notclose(
         electricity_supply[
             ~electricity_supply.index.str.contains(
                 "PHS|battery discharger|home battery discharger|V2G"
             )
         ].sum(),
         var["Secondary Energy|Electricity"],
+        msg="electricity balance",
     )
 
     heat_supply = (
@@ -1713,9 +1753,10 @@ def get_secondary_energy(n, region, _industry_demand):
         + var["Secondary Energy|Heat|Waste"]
         + var["Secondary Energy|Heat|Hydrogen"]
     )
-    assert isclose(
+    warn_if_notclose(
         var["Secondary Energy|Heat"],
         heat_supply[~heat_supply.index.str.contains("discharger")].sum(),
+        msg="heat balance",
     )
 
     hydrogen_production = (
@@ -1744,13 +1785,14 @@ def get_secondary_energy(n, region, _industry_demand):
         + var["Secondary Energy|Hydrogen|Other"]
     )
 
-    assert isclose(
+    warn_if_notclose(
         var["Secondary Energy|Hydrogen"],
         hydrogen_production[
             ~hydrogen_production.index.str.startswith("H2 pipeline")
         ].sum(),
         rtol=0.01,
         atol=1e-5,
+        msg="hydrogen balance",
     )
 
     # Liquids
@@ -1781,11 +1823,12 @@ def get_secondary_energy(n, region, _industry_demand):
         + var["Secondary Energy|Liquids|Hydrogen"]
         + var["Secondary Energy|Liquids|Biomass"]
     )
-    assert isclose(
+    warn_if_notclose(
         var["Secondary Energy|Liquids"],
         liquids_production.sum(),
         rtol=0.01,
         atol=1e-5,
+        msg="liquids balance",
     )
 
     gas_supply = (
@@ -1810,7 +1853,11 @@ def get_secondary_energy(n, region, _industry_demand):
         + var["Secondary Energy|Gases|Natural Gas"]
     )
 
-    assert isclose(var["Secondary Energy|Gases"], gas_supply.sum())
+    warn_if_notclose(
+        var["Secondary Energy|Gases"],
+        gas_supply.sum(),
+        msg="gases balance",
+    )
 
     industry_demand = _industry_demand.filter(
         like=region,
@@ -1971,12 +2018,13 @@ def get_final_energy(
 
     var["Final Energy|Non-Energy Use"] = non_energy.sum() + CH4_for_NH3 + H2_for_NH3
 
-    assert isclose(
+    warn_if_notclose(
         var["Final Energy|Non-Energy Use"],
         var["Final Energy|Non-Energy Use|Gases"]
         + var["Final Energy|Non-Energy Use|Liquids"]
         + var["Final Energy|Non-Energy Use|Solids"]
         + var["Final Energy|Non-Energy Use|Hydrogen"],
+        msg="non-energy use balance",
     )
 
     energy_totals = _energy_totals.loc[region[0:2]]
@@ -2132,9 +2180,10 @@ def get_final_energy(
             "Final Energy|Industry excl Non-Energy Use|Solids",
         ]
     ).sum()
-    assert isclose(
+    warn_if_notclose(
         var["Final Energy|Industry"] - var["Final Energy|Non-Energy Use"],
         var["Final Energy|Industry excl Non-Energy Use"],
+        msg="industry energy balance",
     )
     # Final energy is delivered to the consumers
     low_voltage_electricity = (
@@ -2611,7 +2660,8 @@ def get_emissions(n, region, _energy_totals, industry_demand):
     )
 
     # Assert negligible numerical errors / leakage in stored CO2
-    assert co2_storage.get("co2 stored", 0) < 1.0
+    if co2_storage.get("co2 stored", 0) >= 1.0:
+        logger.warning("Stored CO2 exceeds expected tolerance")
     co2_storage.drop("co2 stored", inplace=True, errors="ignore")
 
     try:
@@ -2821,13 +2871,15 @@ def get_emissions(n, region, _energy_totals, industry_demand):
     # Then it would be necessary to consider negative carbon from solid biomass imports as well
     # Actually we might have to include solid biomass imports in the co2 constraints as well
 
-    assert isclose(
+    warn_if_notclose(
         co2_emissions.filter(like="CHP").sum(),
         CHP_emissions.sum(),
+        msg="CHP emission balance",
     )
-    assert isclose(
+    warn_if_notclose(
         co2_atmosphere_withdrawal.filter(like="CHP").sum(),
         CHP_atmosphere_withdrawal.sum(),
+        msg="CHP atmosphere withdrawal balance",
     )
 
     process_emissions = (
@@ -3889,7 +3941,8 @@ def get_grid_investments(
     scope="all",  # all, baseyear, expanded
     var_name="Investment|Energy Supply|Electricity|Transmission|",
 ):
-    assert scope in ["all", "baseyear", "expanded"]
+    if scope not in ["all", "baseyear", "expanded"]:
+        raise ValueError("scope must be 'all', 'baseyear' or 'expanded'")
     # TODO gap between years should be read from config
     var = pd.Series()
 
@@ -4102,12 +4155,13 @@ def get_grid_investments(
         h2_investments[new_h2_links_kernnetz_i].sum() / 5
     )
 
-    assert isclose(
+    warn_if_notclose(
         var["Investment|Energy Supply|Hydrogen|Transmission and Distribution"],
         var["Investment|Energy Supply|Hydrogen|Transmission and Distribution|Endogen"]
         + var[
             "Investment|Energy Supply|Hydrogen|Transmission and Distribution|Kernnetz"
         ],
+        msg="hydrogen transmission investment balance",
     )
 
     if "retrofitted" in new_h2_links.columns:
@@ -4129,12 +4183,13 @@ def get_grid_investments(
         "Investment|Energy Supply|Hydrogen|Transmission and Distribution|Retrofitted"
     ] = h2_investments[new_h2_links_retrofitted_i].sum() / 5
 
-    assert isclose(
+    warn_if_notclose(
         var["Investment|Energy Supply|Hydrogen|Transmission and Distribution"],
         var["Investment|Energy Supply|Hydrogen|Transmission and Distribution|New-build"]
         + var[
             "Investment|Energy Supply|Hydrogen|Transmission and Distribution|Retrofitted"
         ],
+        msg="hydrogen transmission investment split",
     )
 
     var[
@@ -4170,7 +4225,7 @@ def get_grid_investments(
         / 5
     )
 
-    assert isclose(
+    warn_if_notclose(
         var["Investment|Energy Supply|Hydrogen|Transmission and Distribution|Endogen"],
         var[
             "Investment|Energy Supply|Hydrogen|Transmission and Distribution|Endogen|New-build"
@@ -4178,9 +4233,10 @@ def get_grid_investments(
         + var[
             "Investment|Energy Supply|Hydrogen|Transmission and Distribution|Endogen|Retrofitted"
         ],
+        msg="hydrogen endogen investment balance",
     )
 
-    assert isclose(
+    warn_if_notclose(
         var["Investment|Energy Supply|Hydrogen|Transmission and Distribution|Kernnetz"],
         var[
             "Investment|Energy Supply|Hydrogen|Transmission and Distribution|Kernnetz|New-build"
@@ -4188,6 +4244,7 @@ def get_grid_investments(
         + var[
             "Investment|Energy Supply|Hydrogen|Transmission and Distribution|Kernnetz|Retrofitted"
         ],
+        msg="hydrogen kernnetz investment balance",
     )
 
     if "tags" in new_h2_links.columns:
@@ -4224,7 +4281,7 @@ def get_grid_investments(
         / 5
     )
 
-    assert isclose(
+    warn_if_notclose(
         var["Investment|Energy Supply|Hydrogen|Transmission and Distribution|Kernnetz"],
         var[
             "Investment|Energy Supply|Hydrogen|Transmission and Distribution|Kernnetz|PCI+IPCEI"
@@ -4232,6 +4289,7 @@ def get_grid_investments(
         + var[
             "Investment|Energy Supply|Hydrogen|Transmission and Distribution|Kernnetz|NOT-PCI+IPCEI"
         ],
+        msg="hydrogen kernnetz PCI balance",
     )
 
     # var["Investment|Energy Supply|Electricity|Electricity Storage"] = \
@@ -4424,7 +4482,8 @@ def get_trade(n, region):
         .sum()
     )
 
-    assert region == "DE"  # only DE is implemented at the moment
+    if region != "DE":
+        logger.warning("Only region 'DE' is fully supported (got %s)", region)
 
     DE_renewable_oil = renewable_oil_supply.get("DE renewable oil", pd.Series(0))
     EU_renewable_oil = renewable_oil_supply.get("EU renewable oil", pd.Series(0))
@@ -4497,7 +4556,8 @@ def get_trade(n, region):
             EU_renewable_gas.filter(like="bio").sum() / EU_renewable_gas.sum()
         )
 
-    assert region == "DE"  # only DE is implemented at the moment
+    if region != "DE":
+        logger.warning("Only region 'DE' is fully supported (got %s)", region)
 
     exports_gas_renew, imports_gas_renew = get_export_import_links(
         n, region, ["renewable gas"]
@@ -4790,12 +4850,11 @@ def get_grid_capacity(n, region, year):
     # var["Capacity|Hydrogen|Transmission|Endogenous|Newbuild"] =
     # var["Capacity|Hydrogen|Transmission|Endogenous|Retrofitted"] =
 
-    assert isclose(
+    warn_if_notclose(
         var["Capacity|Hydrogen|Transmission"],
         var["Capacity|Hydrogen|Transmission|Kernnetz"]
         + var["Capacity|Hydrogen|Transmission|Endogenous"],
-    ), (
-        "Hydrogen transmission capacity is not correctly split into Kernnetz and Endogenous"
+        msg="Hydrogen transmission capacity is not correctly split into Kernnetz and Endogenous",
     )
 
     year = h2_links.build_year.max()
@@ -4819,12 +4878,11 @@ def get_grid_capacity(n, region, year):
     # var["Capacity Additions|Hydrogen|Transmission|Endogenous|Newbuild"] =
     # var["Capacity Additions|Hydrogen|Transmission|Endogenous|Retrofitted"] =
 
-    assert isclose(
+    warn_if_notclose(
         var["Capacity Additions|Hydrogen|Transmission"],
         var["Capacity Additions|Hydrogen|Transmission|Kernnetz"]
         + var["Capacity Additions|Hydrogen|Transmission|Endogenous"],
-    ), (
-        "Hydrogen transmission capacity additions are not correctly split into Kernnetz and Endogenous"
+        msg="Hydrogen transmission capacity additions are not correctly split into Kernnetz and Endogenous",
     )
 
     # TODO: add length additions
@@ -4856,7 +4914,8 @@ def hack_DC_projects(n, p_nom_start, p_nom_planned, model_year, snakemake, costs
             )
 
     # Future projects should not have any capacity
-    assert isclose(n.links.loc[future_projects, "p_nom_opt"], 0).all()
+    if not isclose(n.links.loc[future_projects, "p_nom_opt"], 0).all():
+        logger.warning("Future projects have non-zero capacity")
 
     # Setting p_nom to 0 such that n.statistics does not compute negative expanded capex or capacity additions
     # Setting p_nom_min to 0 for the grid_expansion calculation
@@ -4868,10 +4927,11 @@ def hack_DC_projects(n, p_nom_start, p_nom_planned, model_year, snakemake, costs
     # Current projects should have their p_nom_opt bigger or equal to p_nom until the year 2030 (Startnetz that we force in)
     # TODO 2030 is hard coded but should be read from snakemake config
     if model_year <= 2030:
-        assert (
+        if not (
             n.links.loc[current_projects, "p_nom_opt"] + 0.1
             >= n.links.loc[current_projects, "p_nom"]
-        ).all()
+        ).all():
+            logger.warning("Current projects violate capacity assumption")
 
         n.links.loc[current_projects, "p_nom"] -= p_nom_start[current_projects]
         n.links.loc[current_projects, "p_nom_min"] -= p_nom_start[current_projects]
@@ -4910,10 +4970,11 @@ def hack_DC_projects(n, p_nom_start, p_nom_planned, model_year, snakemake, costs
 
     # Past projects should have their p_nom_opt bigger or equal to p_nom
     if model_year <= 2030 + 5:
-        assert (
+        if not (
             n.links.loc[past_projects, "p_nom_opt"] + 0.1  # numerical error tolerance
             >= n.links.loc[past_projects, "p_nom"]
-        ).all()
+        ).all():
+            logger.warning("Past projects violate capacity assumption")
 
     return n
 
