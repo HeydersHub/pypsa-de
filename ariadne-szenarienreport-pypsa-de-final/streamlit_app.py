@@ -41,7 +41,9 @@ scenario = st.selectbox("Szenario wählen:", szenarien)
 
 # Dateiname basierend auf Auswahl
 filename = f"{scenario}.html"
-filepath = os.path.join("Plots_MA", filename)
+#filepath = os.path.join("Plots_MA", filename)
+filepath = os.path.join("ariadne-szenarienreport-pypsa-de-final", "Plots_MA", filename)
+
 
 # HTML-Plot einbinden
 if os.path.exists(filepath):
