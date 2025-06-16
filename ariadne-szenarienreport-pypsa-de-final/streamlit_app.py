@@ -26,14 +26,16 @@ import streamlit as st
 import plotly.io as pio
 import os
 
+st.set_page_config(layout="wide")
+
 # Titel und Einleitung
-st.title("📊 Ergebnisse der Masterarbeit")
+st.title("Master Thesis: The Role of Battery Energy Storage Systems in Germany’s Energy Transition Toward Climate Neutrality by 2045")
 st.markdown("""
-Wähle ein Szenario und Jahr aus, um die zugehörige Plotly-Grafik anzuzeigen.
+Select a plot to display the corresponding plotly graphic.
 """)
 
 # Dropdowns für Szenario und Jahr
-szenarien = ["DSM_V2G", "Nur_DSM", "Nur_V2G", "plot_bereitstellung"]
+szenarien = ["plot_discharge_capacity_line", "plot_energy_capacity_line", "plot_annual_elec_line", "plot_energy_capacity_stacked_balken", "plot_discharge_capacity_stacked_balken", "plot_annual_elec_stacked_balken"]
 #jahre = list(range(2020, 2051, 5))
 
 scenario = st.selectbox("Szenario wählen:", szenarien)
@@ -41,20 +43,20 @@ scenario = st.selectbox("Szenario wählen:", szenarien)
 
 # Dateiname basierend auf Auswahl
 filename = f"{scenario}.html"
-#filepath = os.path.join("Plots_MA", filename)
-filepath = os.path.join("ariadne-szenarienreport-pypsa-de-final", "Plots_MA", filename)
+filepath = os.path.join("Plots_MA", filename)
+#filepath = os.path.join("ariadne-szenarienreport-pypsa-de-final", "Plots_MA", filename)
 
 
 # HTML-Plot einbinden
 if os.path.exists(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
         html_content = f.read()
-    st.components.v1.html(html_content, height=600, scrolling=True)
+    st.components.v1.html(html_content, height=1200, width=1200, scrolling=True)
 else:
     st.error(f"Die Datei `{filename}` wurde nicht gefunden.")
 
 # Optional: Begleittext
-st.markdown(f"""
-**Hinweis:** Diese Grafik zeigt das Szenario **{scenario}** für das Jahr ****.
-Weitere Details siehe Kapitel XY der Arbeit.
-""")
+#st.markdown(f"""
+#**Hinweis:** Diese Grafik zeigt das Szenario **{scenario}** für das Jahr ****.
+#Weitere Details siehe Kapitel XY der Arbeit.
+#""")
