@@ -35,10 +35,10 @@ Select a plot to display the corresponding plotly graphic.
 """)
 
 # Dropdowns für Szenario und Jahr
-szenarien = ["plot_discharge_capacity_line", "plot_energy_capacity_line", "plot_annual_elec_line", "plot_energy_capacity_stacked_balken", "plot_discharge_capacity_stacked_balken", "plot_annual_elec_stacked_balken"]
+szenarien = ["line_plot_annual_elec", "line_plot_discharge_capacity", "line_plot_energy_capacity", "stacked_bar_plot_annual_elec", "stacked_bar_plot_discharge_capacity", "stacked_bar_plot_energy_capacity"]
 #jahre = list(range(2020, 2051, 5))
 
-scenario = st.selectbox("Szenario wählen:", szenarien)
+scenario = st.selectbox("Choose plot:", szenarien)
 #year = st.selectbox("Jahr wählen:", jahre)
 
 # Dateiname basierend auf Auswahl
