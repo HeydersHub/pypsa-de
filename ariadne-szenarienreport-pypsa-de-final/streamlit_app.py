@@ -35,7 +35,9 @@ Select a plot to display the corresponding plotly graphic.
 """)
 
 # Dropdowns für Szenario und Jahr
-szenarien = ["line_plot_annual_elec", "line_plot_discharge_capacity", "line_plot_energy_capacity", "stacked_bar_plot_annual_elec", "stacked_bar_plot_discharge_capacity", "stacked_bar_plot_energy_capacity"]
+szenarien = ["line_plot_annual_elec", "line_plot_discharge_capacity", "line_plot_energy_capacity", "stacked_bar_plot_annual_elec", 
+             "stacked_bar_plot_discharge_capacity", "stacked_bar_plot_energy_capacity", "plot_daily_battery__dispatch", "plot_weekly_battery_dispatch",
+             "plot_monthly_battery_dispatch", "plot_annual_battery_dispatch", "plot_annual_dispatch_all_technologies"]
 #jahre = list(range(2020, 2051, 5))
 
 scenario = st.selectbox("Choose plot:", szenarien)
