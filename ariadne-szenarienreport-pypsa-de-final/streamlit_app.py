@@ -51,7 +51,7 @@ options = {
 }
 
 # Kategorie auswählen
-category = st.sidebar.selectbox("Category", list(options.keys()))
+category = st.sidebar.select_slider("Categories", list(options.keys()))
 
 # Dropdown und Plot für die ausgewählte Kategorie
 cfg = options[category]
