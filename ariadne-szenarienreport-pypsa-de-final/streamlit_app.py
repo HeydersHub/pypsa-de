@@ -16,7 +16,10 @@ options = {
             "line_plot_discharge_capacity",
             "line_plot_energy_capacity",
             "plot_e2p_ratio",
-            "plot_cycles"
+            "plot_cycles",
+            "stacked_bar_plot_annual_elec", 
+            "stacked_bar_plot_discharge_capacity", 
+            "stacked_bar_plot_energy_capacity",
         ]
     },
     "2. Battery Dispatch": {
@@ -48,7 +51,7 @@ options = {
 }
 
 # Kategorie auswählen
-category = st.sidebar.radio("Kategorien", list(options.keys()))
+category = st.sidebar.selectbox("Category", list(options.keys()))
 
 # Dropdown und Plot für die ausgewählte Kategorie
 cfg = options[category]
