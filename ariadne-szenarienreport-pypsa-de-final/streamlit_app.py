@@ -10,7 +10,7 @@ st.markdown("Select a category from the menu on the left and choose the desired 
 
 # -- Definition der Optionen und Plots pro Kategorie --
 options = {
-    "1. Battery Power/Energy/Discharge Capacity": {
+    "1. Battery Capacity": {
         "label": "Choose Battery Power-, Energy- and annual Discharge Capacity Plots:",
         "plots": [
             "line_plot_annual_elec",
@@ -54,7 +54,7 @@ options = {
 # -- Sidebar-Navigation mit streamlit-option-menu --
 with st.sidebar:
     category = option_menu(
-        menu_title=None,                        # keine Überschrift
+        menu_title="Categories",                        
         options=list(options.keys()),          # die vier Kategorien
         icons=["battery-charging",             # Icons optional
                "speedometer2",
@@ -65,7 +65,7 @@ with st.sidebar:
         styles={
             "container": {"padding": "0!important", "background-color": "#f0f2f6"},
             "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#e0e0e0"},
-            "nav-link-selected": {"background-color": "#d0e1ff", "font-weight": "bold"},
+            "nav-link-selected": {"background-color": "#000000", "font-weight": "bold"},
         }
     )
 
