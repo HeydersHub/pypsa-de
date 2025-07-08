@@ -50,6 +50,7 @@ options = {
             "plot_line_RES_capacity_Technologiemix",
             "plot_stacked_bar_RES_capacity_all_scenarios",
             "plot_stacked_bar_RES_single_solar_capacity_all_scenarios",
+            "plot_RES_curtailment"
         ]
     },
     "4. Price Plots": {
