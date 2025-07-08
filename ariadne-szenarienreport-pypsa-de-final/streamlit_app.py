@@ -21,6 +21,14 @@ options = {
             "stacked_bar_plot_annual_elec",
             "stacked_bar_plot_discharge_capacity",
             "stacked_bar_plot_energy_capacity",
+            "plot_e2p_ratio_all_scenarios",
+            "plot_cycles_all_scenarios",
+            "plot_bereitstellung_all_scenarios",
+            "plot_bereitstellung_stacked_balken_alle_szenarien",
+            "plot_entladeleistung_final_all_scenarios",
+            "plot_entladeleistung_all_scenarios",
+            "plot_kapazitaet_all_scenarios",
+            "plot_kapazitaet_final_all_scenarios",
         ]
     },
     "2. Battery Dispatch": {
@@ -39,14 +47,23 @@ options = {
         "label": "Choose RES and other Flexibilities Plots:",
         "plots": [
             "plot_stacked_bar_RES_capacity",
-            "plot_line_RES_capacity_Technologiemix"
+            "plot_line_RES_capacity_Technologiemix",
+            "plot_stacked_bar_RES_capacity_all_scenarios",
+            "plot_stacked_bar_RES_single_solar_capacity_all_scenarios",
         ]
     },
     "4. Price Plots": {
         "label": "Choose Price Plots:",
-        "plots": [
-            "plot_price_daily",
-            "plot_price_year"
+        "plots": [ 
+            #"plot_price_daily",
+            "plot_price_year",
+            "plot_price_yealy_new",
+            "plot_price_daily_new",
+            "plot_price_duration_curve",
+            "plot_price_histogram",
+            "plot_price_cov",
+            "plot_price_daily_spread",
+            
         ]
     }
 }
