@@ -41,6 +41,10 @@ options = {
             "plot_annual_dispatch_all_technologies",
             "plot_monthly_V2G_power_dispatch",
             "plot_monthly_V2G_energy_dispatch"
+            "plot_monthly_V2G_energy_dispatch_High_V2G_Scenario",
+            "plot_monthly_V2G_power_dispatch_High_V2G_Scenario",
+            "plot_monthly_V2G_energy_dispatch_Low_V2G_Scenario",
+            "plot_monthly_V2G_power_dispatch_Low_V2G_Scenario",    
         ]
     },
     "3. RES & Flexibilities": {
