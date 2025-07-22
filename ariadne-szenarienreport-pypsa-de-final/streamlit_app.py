@@ -70,6 +70,13 @@ options = {
             "plot_price_daily_spread",
             
         ]
+    },
+    "5. Flexibility Needs": {
+        "label": "Choose Flexibility Needs Plots:",
+        "plots": [
+            "plot_flexbedarf_total",
+            "plot_flexbeiträge",
+        ]
     }
 }
 
@@ -81,7 +88,8 @@ with st.sidebar:
         icons=["battery-charging",             # Icons optional
                "speedometer2",
                "graph-up",
-               "currency-dollar"],
+               "currency-dollar",
+               "gear"],
         menu_icon="cast",                      # Icon über der Liste (optional)
         default_index=0,
         styles={
