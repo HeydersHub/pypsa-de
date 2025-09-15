@@ -246,27 +246,35 @@ else:
 
     elif main_choice == "2. Key Driver for Battery Deployment":
         st.markdown("""
-        In this chapter, the main drivers for the deployment of battery energy storage are discussed:
 
-By conducting the current literature, I defined 10 key drivers for utility-scale battery deployment and grouped them into 4 categories.
+Based on a comprehensive review of the current literature, ten key drivers for utility-scale battery deployment were identified and grouped into 
+four overarching categories.
 
-The first category is the need for system flexibility. As the conventional power plants, like coal and gas power plants were able to adjust there electricity generation according to the demand, 
-less energy storage was needed. But for renewables like PV and Wind, more Energy Storage is gonna be needed to supply the demand at all times. 
-Here the question is how much of that demand/need can/will be proivded by utility-scale battery storage?
-The need for system flexibility can be divided into daily, weekly and annual flexibility needs to make a more clear distinction between
-the use-case and amount needed of short-term vs. long-term energy storages. Batteries are considered as short-term storages.
+The first category concerns the need for system flexibility. Historically, conventional power plants such as coal and gas units were capable
+of adjusting their electricity generation to match demand, thereby reducing the requirement for energy storage. In contrast, variable renewable energy
+sources such as solar PV and wind are intermittent and weather dependent, which significantly increases the need for storage to ensure that demand
+can be reliably met at all times. 
+To what extent can utility-scale batteries contribute to meeting this growing flexibility requirement? Flexibility needs can be distinguished across
+different temporal dimensions like daily, weekly, and annual, allowing a clearer differentiation
+between the roles of short-term and long-term storage technologies. Batteries are generally classified as short-term storage solutions as further
+addressed in chapter xy.
 
-To investigate that, the other competitive technologies to provide that flexibility have to be taken into account.
-Here, mainly other battery technologies like Prosumer Home Batteries and V2G, as well as other energy storage options like PHS, Hydrogen or Thermal/Heat Storages have to be considered.
-Further, flexibility can also be provided by DSM, like Smart Charging of EVs, Heat Pumps or Electrolysis production. At last also the Import and Export Capacities have to be considered as they can also provide flexibility.
+When assessing the potential role of batteries in this context, it is essential to consider competing flexibility options. 
+These include other forms of batteries, such as prosumer home batteries and vehicle-to-grid (V2G) solutions, as well as 
+alternative storage technologies like pumped hydro storage (PHS), hydrogen, or thermal/heat storage. Demand-side management (DSM) options,
+such as smart charging of EVs, flexible operation of heat pumps, or hydrogen production through electrolysis, also contribute to system flexibility.
+Moreover, cross-border electricity trade via import and export capacities plays a role in balancing supply and demand.
 
-To further look into more detail what role batteries can play in providing the flexibility its important to consider the economic drivers for battery deployment.
-If they have a good business case and are more profitable than their competing technologies it will be likely that they provide a bigger share of the needed flexibility.
-Therefore the cost developments/trajectories for utility-scale batteries have to be considered as well as the markets they operate on and their specific use-cases / roles.
-Their economic viability and business cases have to be investigated as well. Here, especially the self-cannibalization effects will be examined, which describe a market saturation and therefore less profitability for individual batteries.
-The technical parameters like the lifetime and efficiency (and the E2P ratio) is further important as they shape the economic attractiveness and use-cases of the technology as well.
+A second key dimension is economic drivers for battery deployment. The competitiveness of batteries relative to other flexibility technologies
+depends on their profitability and business case. Thus, cost trajectories and technological maturity for utility-scale batteries must be
+evaluated alongside the market frameworks in which they operate and the specific services they can provide. Particular attention must be paid to
+the phenomenon of self-cannibalization, where increasing battery penetration leads to diminishing returns and reduced profitability for 
+individual assets. Technical parameters such as lifetime, round-trip efficiency, and the energy-to-power (E2P) ratio also play a critical role,
+as they determine both the economic attractiveness and the potential applications of battery storage.
 
-At last the current and possible future regulatory decisions / framework need to be considered as they shape further the attractiveness of certain technologies and lead the way for deployment. 
+Finally, the regulatory framework and policy environment must be taken into account. Current and future regulatory decisions are pivotal in shaping
+the economic viability of different technologies and can either accelerate or hinder the deployment of utility-scale batteries. In this sense,
+regulatory frameworks not only influence investment decisions but also guide the overall trajectory of energy system transformation.
         """)
 
         # ---- Alles zentral in einer Liste verwaltet ----
