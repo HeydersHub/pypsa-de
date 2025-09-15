@@ -12,11 +12,11 @@ st.markdown("Navigate through the thesis structure on the left. Select a section
 # Struktur des Inhaltsverzeichnisses (ohne doppelte Emojis im Titel)
 # ------------------------------
 toc = {
-    #"1. Introduction": "This notebook introduces my master thesis topic and results. The following gives a brief introduction and summary of the key points of the thesis results. For more detailed information, please refer to the full thesis document which you can download below.",
     "1. Introduction": None,
     "2. Key Driver for Battery Deployment": None,
-    "3. Model Results": {
-        "3.1 Battery Capacity": {
+    "3. Scenarios & Assumptions": None,  # << NEU EINGEFÜGT
+    "4. Model Results": {  # << vormals "3. Model Results"
+        "4.1 Battery Capacity": {
             "label": "Choose Battery Power-, Energy- and annual Discharge Capacity Plots:",
             "plots": [
                 "Annual_Battery_Discharge_All_Scenarios",
@@ -35,25 +35,9 @@ toc = {
                 "Battery_Full_Cycles_All_Scenarios",
                 "Battery_Full_Cycles_Base_Scenario",
                 "Battery_Full_Cycles_Delta_All_Scenarios",
-                #"line_plot_annual_elec",
-                #"line_plot_discharge_capacity",
-                #"line_plot_energy_capacity",
-                #"plot_e2p_ratio",
-                #"plot_cycles",
-                #"stacked_bar_plot_annual_elec",
-                #"stacked_bar_plot_discharge_capacity",
-                #"stacked_bar_plot_energy_capacity",
-                #"plot_e2p_ratio_all_scenarios",
-                #"plot_cycles_all_scenarios",
-                #"plot_bereitstellung_all_scenarios",
-                #"plot_bereitstellung_stacked_balken_alle_szenarien",
-                #"plot_entladeleistung_final_all_scenarios",
-                #"plot_entladeleistung_all_scenarien",
-                #"plot_kapazitaet_all_scenarien",
-                #"plot_kapazitaet_final_all_scenarien",
             ]
         },
-        "3.2 Battery Dispatch": {
+        "4.2 Battery Dispatch": {
             "label": "Choose Battery Dispatch Plots:",
             "plots": [
                 "plot_daily_battery__dispatch",
@@ -70,7 +54,7 @@ toc = {
                 "plot_monthly_V2G_power_dispatch_Low_V2G_Scenario",    
             ]
         },
-        "3.3 RES & Flexibilities": {
+        "4.3 RES & Flexibilities": {
             "label": "Choose RES and other Flexibilities Plots:",
             "plots": [
                 "plot_stacked_bar_RES_capacity",
@@ -80,22 +64,18 @@ toc = {
                 "plot_RES_curtailment"
             ]
         },
-        "3.4 Price Plots": {
+        "4.4 Price Plots": {
             "label": "Choose Price Plots:",
             "plots": [ 
-                #"plot_price_year",
-                #"Average_Annual_Prices_All_Scenarios",
                 "plot_price_yealy_new",
-                #"Average_Daily_Prices_All_Scenarios",
                 "plot_price_daily_new",
-                #"Price_Duration_Curve_Base_Scenario",
                 "plot_price_duration_curve",
-                "plot_price_histogram",
-                "plot_price_cov",
+                #"plot_price_histogram",
+                #"plot_price_cov",
                 "plot_price_daily_spread",
             ]
         },
-        "3.5 Flexibility Needs": {
+        "4.5 Flexibility Needs": {
             "label": "Choose Flexibility Needs Plots:",
             "plots": [
                 "plot_flexbedarf_total",
@@ -103,8 +83,7 @@ toc = {
             ]
         }
     },
-    #"4. Discussion/Conclusion": None
-    "4. Key Findings & Conclusion": None
+    "5. Key Findings & Conclusion": None  
 }
 
 # ------------------------------
@@ -115,7 +94,7 @@ with st.sidebar:
     main_choice = option_menu(
         menu_title="Thesis Contents",
         options=list(toc.keys()),
-        icons=["book", "lightning", "bar-chart", "chat-dots"],  # Icons Hauptkapitel
+        icons=["book", "lightning", "sliders", "bar-chart", "chat-dots"],  # Icon für neues Kapitel ergänzt
         default_index=0,
         styles={
             "container": {"padding": "0!important", "background-color": "#f0f2f6"},
@@ -129,7 +108,7 @@ with st.sidebar:
         sub_choice = option_menu(
             menu_title=f"{main_choice} – Subsections",
             options=list(toc[main_choice].keys()),
-            icons=["battery-charging", "speedometer2", "graph-up", "currency-dollar", "gear"],  # Icons Subkapitel
+            icons=["battery-charging", "speedometer2", "graph-up", "currency-dollar", "gear"],  # bleibt so
             default_index=0,
             styles={
                 "container": {"padding": "0!important", "background-color": "#f9fafc"},
@@ -141,7 +120,6 @@ with st.sidebar:
 # ------------------------------
 # Plot-Funktion
 # ------------------------------
-
 def show_plot(plot_name):
     filename = f"{plot_name}.html"
     filepath = os.path.join("ariadne-szenarienreport-pypsa-de-final", "Plots_MA", filename)
@@ -163,16 +141,18 @@ if sub_choice:
     # Eingebettetes Plotly-HTML (wie bisher)
     show_plot(selected_plot)
 
-    # Und zusätzlich: Link zum Plot in neuem Tab (Full Screen) als download button
+    # Und zusätzlich: Download-Button (Full Screen im Browser öffnen)
     file_path = os.path.join("ariadne-szenarienreport-pypsa-de-final", "Plots_MA", f"{selected_plot}.html")
-    with open(file_path, "r", encoding="utf-8") as f:
-        btn = st.download_button(
-            label="🔍 Download Plot to view in Full Screen in your browser",
-            data=f,
-            file_name=f"{selected_plot}.html",
-            mime="text/html"
-        )
-
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as f:
+            st.download_button(
+                label="🔍 Download Plot to view in Full Screen in your browser",
+                data=f,
+                file_name=f"{selected_plot}.html",
+                mime="text/html"
+            )
+    else:
+        st.info("Plot-Datei nicht gefunden – bitte generieren oder Pfad prüfen.")
 
 else:
     st.header(main_choice)
@@ -191,13 +171,13 @@ else:
         The German energy system is undergoing a fundamental transformation, driven by the urgent need to mitigate climate change.
         This shift necessitates a transition from conventional power plants to renewable energy sources such as wind and PV.
         However, this transition also brings new challenges. Unlike traditional power plants, which can be dispatched according to demand, variable renewable energy generation is highly dependent on weather conditions.
-        As a result, the need for flexibility in the power system is increasing significantly\parencite{Ariadne2025}.
+        As a result, the need for flexibility in the power system is increasing significantly\\parencite{Ariadne2025}.
         
         Battery storage systems have emerged as a key solution for providing this flexibility.
         They are widely considered an essential component of a future climate-neutral energy system, particularly one that relies heavily on PV and wind power.
         In recent years, the demand for battery storage has surged, driven by declining costs and the increasing need for system flexibility.
-        This trend is reflected in the current exponential rise in grid connection requests for utility-scale battery storage \parencite{Enkhardt2025} with a planned commissioning year before 2030,
-        which now far exceed the projections until 2030 outlined in various studies, as illustrated in Figure \ref{fig:Entwicklungspfade_Batteriespeicher}.
+        This trend is reflected in the current exponential rise in grid connection requests for utility-scale battery storage \\parencite{Enkhardt2025} with a planned commissioning year before 2030,
+        which now far exceed the projections until 2030 outlined in various studies, as illustrated in Figure \\ref{fig:Entwicklungspfade_Batteriespeicher}.
         
         **Problem Statement**
         
@@ -239,14 +219,9 @@ else:
         ... (to be added later)
         
         """)
-        ## Introduction
-        # **"The Role of Battery Energy Storage Systems in Germany’s Energy Transition Toward Climate Neutrality by 2045"**.
-        # This notebook introduces my master thesis topic and results. 
-        # The following gives a brief introduction and summary of the key points of the thesis results.
 
     elif main_choice == "2. Key Driver for Battery Deployment":
         st.markdown("""
-
 Based on a comprehensive review of the current literature, ten key drivers for utility-scale battery deployment were identified and grouped into 
 four overarching categories.
 
@@ -277,7 +252,7 @@ the economic viability of different technologies and can either accelerate or hi
 regulatory frameworks not only influence investment decisions but also guide the overall trajectory of energy system transformation.
         """)
 
-        # ---- Alles zentral in einer Liste verwaltet ----
+        # ---- Key Drivers: zentrale Datenstruktur mit DEINEN Detailtexten ----
         drivers = [
             {
                 "title": "The Need for System Flexibility",
@@ -285,32 +260,28 @@ regulatory frameworks not only influence investment decisions but also guide the
                     "Expansion of VRE, especially Wind and PV"
                 ],
                 "details": """
-                \parencite{Cebulla2018} suggests that the amount of storage systems will be higher in a PV dominant system than in a Wind dominant system.
-                This is (could be) even more so for Kurzzeitspeicher like Battery Storage because they mainly store/balance the day/night difference of battery storages.
-Hypothese: More variability in the supply side and a inflexible/inelastic demand side, results in more market price volatility. 
-Storage system can, in providing flexibility, result in less volatile market prices.
--The expansion of wind and PV will be taken from the Ariadne 2025 report --> wie ist es da genau? ich glaube exogen bis 2030 vorgegeben anhand der Ausbauziele der Regierung und danach endogener Ausbau.\\
--In \parencite{Cebulla2018} (nochmal suchen wo genau) and \parencite{Thimet2023} is argued that after around 67\% VRE share, the investment in energy storage capacities grows exponentially.
-% 67\% VRE share is an important threshold.
--In \parencite{Thimet2023} this is also true for battery storage which gets mainly build after the VRE share exceeds 65\% in the model. 
-Currently Germanys VRE share was above 60\% the first time in 2024 and set the goal of 80\% VRE in 2030. 
-This seems to be in line with the current Netzanschlussanfragen which mainly want to build between 2026 and 2030.
-The markets seem to anticipating passing the threshold soon.
--The results in \parencite{Cebulla2018} suggest that the amount of (bzw. the need/demand of) Energy storage power capacity (GW) grows linear
-with the VRE-share and the amount of Energy storage capacity (GWh) grows exponentially with the VRE-share. This includes long-term and short-term storages.
-Is there a similar behaviour for battery storages?
+Germany reached a renewable energy share of more than 60% for the first time in 2024 and has set the targets of achieving an 80% renewable share
+by 2030 and climate neutrality by 2045 (Ariadne, 2025). The vast majority of these renewables will be provided by variable renewable energy (VRE)
+sources, primarily photovoltaic (PV) and wind power. The integration of such large shares of VRE poses challenges for system stability due to their
+variability and limited dispatchability. In this context, flexibility options such as energy storage are expected to play a crucial role.
 
-Germany reached a share of renewables above 60\% for the first time in 2024 and set the goal of 80\% renewables in 2030 as well as carbon neutrality in 2045.
-The vast majority of renewables will be provided by PV and Wind power plants which are VRE (Ariadne 2025). 
+Several studies have highlighted important thresholds for the deployment of storage technologies. Both \parencite{Cebulla2018} and \parencite{Thimet2023}
+argue that once the VRE share surpasses approximately 65–67%, investment in energy storage grows disproportionately, with capacity expansion accelerating
+rapidly beyond this point. Specifically, \parencite{Thimet2023} shows that utility-scale battery storage begins to scale significantly once VRE 
+penetration exceeds 65% in the modeled system. This observation is in line with current developments in Germany, where a large amount of grid connection
+requests for storage projects are concentrated in the period between 2026 and 2030, suggesting that the markets already anticipate passing this threshold 
+in the near future.
 
-In \parencite{Cebulla2018} (nochmal suchen wo genau) and \parencite{Thimet2023} is argued that after around 67\% VRE share,
-the investment in energy storage capacities grows exponentially. This includes short- as well as long-term storages.
-In \parencite{Thimet2023} this is also true for battery storage which gets mainly build after the VRE share exceeds 65\% in the model.
-\parencite{Cebulla2018} suggests that the amount of storage systems will be higher in a PV dominant system than in a Wind dominant system.
-This is (could be) even more so for Kurzzeitspeicher like Battery Storage because they mainly store/balance the day/night difference of battery storages.
-The results in \parencite{Cebulla2018} suggest that the amount of (bzw. the need/demand of) Energy storage power capacity (GW) grows linear with the VRE-share
-and the amount of Energy storage capacity (GWh) grows exponentially with the VRE-share. This includes long-term and short-term storages. 
-Is there a similar behaviour for battery storages?  
+The type of VRE mix also has a decisive influence on the required amount of storage. \parencite{Cebulla2018} suggests that PV-dominant systems demand
+higher levels of storage capacity compared to wind-dominant systems, since short-term storages such as batteries are particularly well-suited to balancing
+diurnal fluctuations between day and night. Moreover, the same study indicates that while the demand for storage power capacity (GW) increases linearly
+with the share of VRE, the demand for storage energy capacity (GWh) grows exponentially. This finding applies across both short-term and long-term
+storage technologies and raises the question of whether a similar pattern can be observed specifically for battery storage.
+
+In parallel, the literature supports the hypothesis that increasing variability on the supply side, coupled with limited flexibility on the demand side,
+results in higher market price volatility. Energy storage systems, by providing flexibility, can mitigate these effects and contribute to more stable
+electricity market prices. This dual role, enabling higher shares of VRE and stabilizing market outcomes, emphasizes the growing importance of battery
+storage in the German energy transition.
                 """
             },
             {
@@ -322,18 +293,18 @@ Is there a similar behaviour for battery storages?
                     "Import/Export Capacities"
                 ],
                 "details": """
-                Battery storage does not operate in isolation. Competing and complementary technologies include:  
+Battery storage does not operate in isolation. Competing and complementary technologies include:  
 
-                - **Expansion of other battery types**: The expansion of dezentralized prosumer home batteries and mobile V2G-enabled storage could reduce the demand for stationary large-scale battery storage.
-                This is due to them also competing for arbitrage on the spot markets. While the ancillary services are likely to be dominated by utility-scale batteries.
-                The reduction of the need of utility-scale batteries when decentralized prosumer batteries are expanding as well as EV V2G Batteries is part of this thesis.
-                If they will actually start to penetrate the market the same way as utility scale batteries is dependent on several 
-                factors especially their business cases / economic viability as well as regulatory decisions. .  
-                - **Other storage forms**: Such as PHS, hydrogen, or heat storage.  
-                - **Flexibility options**: Like Industry DSM, Heat Pumps, Electrolysers, EV Smart Charging.  
-                - **Cross-border trade**: The interconnector capacities are of especial importance here. 
-                Also how the used generation technologies and flexibilities in the neighbouring countries. 
-                The model will include the capacitites and imports/exports from germanys most important electricity trading partners.
+- **Expansion of other battery types**: The expansion of dezentralized prosumer home batteries and mobile V2G-enabled storage could reduce the demand for stationary large-scale battery storage.
+This is due to them also competing for arbitrage on the spot markets. While the ancillary services are likely to be dominated by utility-scale batteries.
+The reduction of the need of utility-scale batteries when decentralized prosumer batteries are expanding as well as EV V2G Batteries is part of this thesis.
+If they will actually start to penetrate the market the same way as utility scale batteries is dependent on several 
+factors especially their business cases / economic viability as well as regulatory decisions. .  
+- **Other storage forms**: Such as PHS, hydrogen, or heat storage.  
+- **Flexibility options**: Like Industry DSM, Heat Pumps, Electrolysers, EV Smart Charging.  
+- **Cross-border trade**: The interconnector capacities are of especial importance here. 
+Also how the used generation technologies and flexibilities in the neighbouring countries. 
+The model will include the capacitites and imports/exports from germanys most important electricity trading partners.
                 """
             },
             {
@@ -345,33 +316,41 @@ Is there a similar behaviour for battery storages?
                     "(indirectly Technical Parameters)"
                 ],
                 "details": """
-                Economics remain a decisive factor:  
+Economics remain a decisive factor:  
 
 - **Cost trajectories:** 
-The cost developments for batteries has been a steep drop in recent years. Regarding future cost trajectories until 2045, the development is related to high uncertainty. 
-The Assumptions of costs per kWh in different Energy System Studies have a broad range but all expect a further decline in cost as is shown in Table xy. 
-For Energy System Studies the total project costs for installing a kWh or kW of batteries is relevant, even though most other studies consider the battery cell or battery module costs. 
-But since the batteries are the biggest cost driver of the project costs, these studies are a good indicator as well. 
-According to the most recent market overview by PV Magazine, investment costs for projects scheduled for 2025 fall within the range assumed in these studies (Lichner 2025). 
-BloombergNEF, however, reports significantly lower prices for battery packs and cells in 2024, down to 115 USD per kWh for battery packs globally, and as low as 94 USD per kWh in China (Catsaros 2024).
-In a recent auction in China for 16 GWh of battery storage projects, the average price of the bids was at 66 USD per kWh (Shaw 2024), which is already lower than the assumed cost per kWh for 2045 in most of the above-mentioned studies.
-The battery cell costs are mainly driven by china since most of the value chain of LFP Battery Production is there as is shown in the Graph xy.
-Therefore geopolitical tensions as well as a trade war with increasing tariffs could significantly impact the costs of battery projects in germany. 
-On the other hand further breakthroughs in battery technology and battery manufacturing could lead to significant cost reductions earlier than excpected.
-The current costs for a battery project in Germany are described by the CEO of Ecostor, a leading company in battery projects, as the following in the recent "Batterie Geladen" Podcast (zitieren): 
-A full battery container from china, including BMS and cooling systems, is available for around 100 Euro/kWh. 
-The battery modules make up currently around 35-45 \% of the total project costs and the Inverter and transformers around 15-20 \%. For bigger projects (more than 10 MW) the percentage for transformers is even higher. 
-Construction, Cabling and external services make up the rest.
-He states that the external costs (inverters, transformers, cabling, ...) are becoming incresingly important as the battery costs decreased so much in the recent years. 
-They further states that their projects use LFP Batteries and they expect a battery lifetime of 15 years as well as a cycle life of 7000-8000 cycles.
-The inverter lifetime is expected to be around 15 to 20 years. 
-With there current marketing strategy they expect an average of 1,5 cycles per day which would be 8200 cycles in 15 years. 
-There utility scale batteries operate on the FCR and aFRR markets as well as on the spot markets. 
-The follow a cross market strategy, maximising their revenue on the these three markets. 
-With this strategy they expect an annual return of around 15\% of their project costs and an amortization period of around 6 to 7 years.
-In the short term they expect even higher annual returns and in the long run smaller returns.
-For this thesis the cost trajectories of the Ariadne Report 2025 will be used and an sensitivity analysis will
-be used to see the impact of the uncertainty related to future battery costs.
+In recent years, the cost of batteries has experienced a steep decline, significantly improving their competitiveness in energy systems.
+Looking ahead to 2045, however, the future cost trajectory of batteries remains highly uncertain. As shown in Table XY, cost assumptions
+in different energy system studies vary widely, but all agree on the expectation of further reductions. Energy system studies typically
+consider the total project costs of installing one kilowatt-hour (kWh) or one kilowatt (kW) of battery capacity. In contrast, most other
+technology-focused studies report only battery cell or module costs. Since the battery modules represent the largest share of total project costs,
+the latter can still serve as a useful benchmark for assessing broader cost developments.
+According to a recent market overview by PV Magazine, investment costs for projects scheduled in 2025 are broadly in line with the assumptions
+of the major system studies (Lichner, 2025). BloombergNEF, however, reports considerably lower global market prices in 2024, with battery pack
+costs averaging 115 USD/kWh and prices as low as 94 USD/kWh in China (Catsaros, 2024). Moreover, a large-scale auction in China for 16 GWh of
+storage capacity resulted in an average bid price of just 66 USD/kWh (Shaw, 2024). This value is already below the cost assumptions for 2045
+in most of the aforementioned energy system studies. These findings underline both the pace of cost reductions and the difficulty of reliably 
+projecting long-term trends.
+Battery cell costs are currently dominated by developments in China, as the majority of the lithium iron phosphate (LFP) value chain is concentrated
+there (see Figure XY). This heavy dependence on Chinese manufacturing introduces risks related to geopolitical tensions and the possibility of a trade
+conflict, including the imposition of tariffs, which could significantly increase the cost of battery projects in Germany. Conversely, continued 
+innovation in battery technologies and manufacturing processes could accelerate cost reductions beyond current expectations.
+The current structure of project costs in Germany was recently described by the CEO of Ecostor, one of the leading developers of utility-scale
+battery projects, in the podcast Batterie Geladen (citation needed). According to this source, a complete battery container imported from China,
+including the battery management system (BMS) and cooling costs approximately 100 EUR/kWh. Battery modules account for around 35–45% of total project
+costs, while inverters and transformers represent approximately 15–20%. For larger projects (exceeding 10 MW), the share of transformer costs is 
+even higher. The remaining costs are attributable to construction, cabling, and external services. As the cost of batteries has decreased so substantially
+in recent years, these external cost components have become increasingly important in determining overall project economics.
+The same source reported that Ecostor relies on LFP batteries, which are expected to have a lifetime of about 15 years and a cycle life
+of 7,000–8,000 cycles. The inverters typically last between 15 and 20 years. With a targeted operational strategy of 1.5 cycles per day 
+equivalent to roughly 8,200 cycles over 15 years—their utility-scale projects currently operate across multiple markets, 
+including frequency containment reserve (FCR), automatic frequency restoration reserve (aFRR), and spot markets. By pursuing this cross-market
+strategy, the company expects to achieve an average annual return of about 15% of project costs, resulting in an amortization period of approximately
+six to seven years. In the short term, returns are expected to be even higher, while a gradual decline is anticipated in the longer term as market
+competition increases.
+For the purposes of this thesis, the cost trajectories from the Ariadne Report 2025 will be adopted as the baseline. 
+In addition, a sensitivity analysis will be conducted to capture the effects of uncertainty regarding future battery costs, 
+thereby allowing for a more robust assessment of the role of battery storage in Germany’s energy transition.
  
 - **Market design & roles:** Revenues from energy arbitrage, ancillary services, and congestion management. Further detailed in chapter xy.
 - **Viability & self-cannibalization:** Profitability shapes investment attractiveness in battery storage and therefore their possible deployment/expansion. 
@@ -388,30 +367,76 @@ A saturation of profitability for batteries can already be seen on the FCR marke
                     "Grid fees, ..."
                 ],
                 "details": """
-                Policy choices strongly influence battery deployment:  
+Policy choices strongly influence battery deployment:  
 
-                - **Grid fees & levies:** Double charging must be avoided; exemptions can improve competitiveness.  
-                - **Market rules:** Strong imbalance pricing, locational signals, and capacity markets encourage flexibility. Future capacity market.
-                - **Permitting & interconnection:** Queue times and grid codes can be major bottlenecks. --> Permits from ÜNBs
-                - **Standards & aggregation:** Interoperability and clear rules for V2G/DSM aggregation are crucial.  
-                - **Incentives & subsidies:** Targeted support can kickstart deployment but should be phased out as markets mature.
-                - **Digitalization & Smart Grids:** Advanced grid management and real-time data can enhance battery integration and operation.
-
+- **Grid fees & levies:** Double charging must be avoided; exemptions can improve competitiveness.  
+- **Market rules:** Strong imbalance pricing, locational signals, and capacity markets encourage flexibility. Future capacity market.
+- **Permitting & interconnection:** Queue times and grid codes can be major bottlenecks. --> Permits from ÜNBs
+- **Standards & aggregation:** Interoperability and clear rules for V2G/DSM aggregation are crucial.  
+- **Incentives & subsidies:** Targeted support can kickstart deployment but should be phased out as markets mature.
+- **Digitalization & Smart Grids:** Advanced grid management and real-time data can enhance battery integration and operation.
                 """
             }
         ]
 
-        # ---- Ausgabe ----
         st.markdown("### Key Drivers")
-
         for i, section in enumerate(drivers, start=1):
             st.markdown(f"**{i}. {section['title']}**")
             st.markdown("\n".join([f"- {b}" for b in section["bullets"]]))
             with st.expander("Details", expanded=False):
                 st.markdown(section["details"])
 
+    elif main_choice == "3. Scenarios & Assumptions":
+        st.markdown("""
+This chapter documents the **scenario design** and the **core modelling assumptions** used in PyPSA-DE.
 
-    elif main_choice == "3. Model Results":
+## Scenarios:
+
+### The Base Scenario
+
+The base scenario is aligned with the Net-Zero-Scenario pathway from the Ariadne Report 2025 \cite{Ariadne2025}.
+
+For the base scenario in this thesis, the following adjustments to the model which was used in the Net-zero-Scenario were made:
+
+\begin{itemize}
+    \item Adjusted Spatial Resolution
+    \item Adjusted Temporal Resolution
+    \item Added Minimum Value for Home Battery Expansion
+    \item Turned on V2G option and adjusted assumptions
+    \item Adjusted Battery Lifetime assumption
+\end{itemize}
+
+The adjustments are described in more detail in chapter xy of the thesis.
+
+### The V2G Scenarios
+
+To examine the potential and the effects of different V2G rates, three different variations are examined. 
+
+1. The base scenario but the V2G option is turned off
+2. The base scenario but the min. morning SoC value rises to 60% instead of 40%. (Low V2G Scenario)
+3. The base scenario but the V2G participation rate is higher as well as the BEV-DSM rate. 
+Also the battery size per vehicle is higher in this scenario. (High V2G Scenario)
+
+### The Cost Variation Scenarios
+
+To examine the potential of cost variations on utility-scale batteries the following battery costs are variated:
+1. Baseline cost level
+2. A 20% cost decrease of the capital cost per kW and per kWh in each target year
+3. A 20% cost increase of the capital cost per kW and per kWh in each target year
+
+Further, a cost sensitivity analysis was conducted with more extreme cost variations of  +/- 50\% and +100\% as well as -99\%.
+
+### The PV Variation Scenarios
+
+In this scenario the amounts of PV deployment are variated to examine the effects on battery deployment. 
+
+Method: In each target year from 2030 on the amount of battery deployment is set fix to a +/- 20% compared to the base scenario. 
+
+
+        """)
+        # Use the expanders below to see concise write-ups that tie directly to your configuration files and data sources.
+
+    elif main_choice == "4. Model Results":
         st.markdown("""
         ## Results
         
@@ -425,8 +450,7 @@ A saturation of profitability for batteries can already be seen on the FCR marke
         - 🔧 **Flexibility Needs**: Contribution of BESS, V2G, and other technologies to residual load balancing  
         """)
 
-    #elif main_choice == "4. Discussion/Conclusion":
-    elif main_choice == "4. Key Findings & Conclusion":
+    elif main_choice == "5. Key Findings & Conclusion":
         st.markdown("""
           **Main insights:**
           **Limitations:**
@@ -434,4 +458,3 @@ A saturation of profitability for batteries can already be seen on the FCR marke
         """)
     else:
         st.info("Please choose a section from the sidebar to view its content.")
-        
