@@ -5,122 +5,180 @@ import os
 st.set_page_config(layout="wide")
 
 # Titel
-st.title("Master Thesis: The Role of Battery Energy Storage Systems in Germany’s Energy Transition Toward Climate Neutrality by 2045")
+st.title("Master Thesis: The Role of Utility-scale Battery Energy Storage Systems in Germany’s Energy Transition Toward Climate Neutrality by 2045")
 st.markdown("Navigate through the thesis structure on the left. Select a section to view the relevant plots or text.")
 
 # ------------------------------
-# Struktur des Inhaltsverzeichnisses (ohne doppelte Emojis im Titel)
+# Inhaltsverzeichnis-Struktur
 # ------------------------------
 toc = {
     "1. Introduction": None,
     "2. Key Driver for Battery Deployment": None,
-    "3. Scenarios & Assumptions": None,  # << NEU EINGEFÜGT
-    "4. Model Results": {  # << vormals "3. Model Results"
-        "4.1 Battery Capacity": {
-            "label": "Choose Battery Power-, Energy- and annual Discharge Capacity Plots:",
+    "3. Scenarios & Assumptions": None,
+    "4. Model Results": {
+        # 4.1 mit Unterkapiteln 4.1.1 und 4.1.2
+        "4.1 Battery Technology Rollout": {
+            "4.1.1 Key Parameters": {
+                "label": "Choose plots for key battery parameters (power, energy, ratios, cycles):",
+                "plots": [
+                    # hier deine Plot-Dateinamen eintragen, z.B.:
+                    # "Installed_Power_Capacity_All_Scenarios",
+                    # "Installed_Energy_Capacity_All_Scenarios",
+                    "FINAL_Battery_Rollout_Base_Scenario",
+                    "FINAL_Installed_Energy_Capacity_All_Scenarios",
+                    "FINAL_Annual_Battery_Discharge_All_Scenarios",
+                ]
+            },
+            "4.1.2 Dispatch": {
+                "label": "Choose plots for annual battery discharge:",
+                "plots": [
+                    # z.B.:
+                    # "Annual_Battery_Discharge_All_Scenarios",
+                    # "Annual_Battery_Discharge_Base_Scenario",
+                    "FINAL_plot_Dispatch_week_jan_batteries_PV_Wind",
+                    "FINAL_plot_Dispatch_week_june_batteries_PV_Wind",
+                    "FINAL_plot_Dispatch_annual_batteries",
+                    "FINAL_plot_Dispatch_monthly_batteries",
+                    "FINAL_Annual_Dispatch_All_technologies",
+                ]
+            }
+        },
+
+        # 4.2 (ohne dritte Ebene)
+        "4.2 Vehicle-to-Grid": {
+            "label": "Choose V2G-related plots:",
             "plots": [
-                "Annual_Battery_Discharge_All_Scenarios",
-                "Annual_Battery_Discharge_All_Scenarios_Stacked_Bar",
-                "Annual_Battery_Discharge_Base_Scenario",
-                "Annual_Battery_Discharge_Delta_All_Scenarios",
-                "Installed_Power_Capacity_All_Scenarios",
-                "Installed_Power_Capacity_Base_Scenario",
-                "Installed_Power_Capacity_Delta_All_Scenarios",
-                "Installed_Energy_Capacity_All_Scenarios",
-                "Installed_Energy_Capacity_Base_Scenario",
-                "Installed_Energy_Capacity_Delta_All_Scenarios",
-                "Battery_E2P_Ratio_All_Scenarios",
-                "Battery_E2P_Ratio_Base_Scenario",
-                "Battery_E2P_Ratio_Delta_All_Scenarios",
-                "Battery_Full_Cycles_All_Scenarios",
-                "Battery_Full_Cycles_Base_Scenario",
-                "Battery_Full_Cycles_Delta_All_Scenarios",
+                # z.B.:
+                # "plot_monthly_V2G_power_dispatch",
+                # "plot_monthly_V2G_energy_dispatch",
+                "FINAL_plot_V2G_Power_Dispatch",
+                "FINAL_plot_V2G_Energy_Dispatch",
+                "FINAL_plot_V2G_Power_Dispatch_All_Scenarios",
+                "FINAL_plot_V2G_Energy_Dispatch_All_Scenarios",
             ]
         },
-        "4.2 Battery Dispatch": {
-            "label": "Choose Battery Dispatch Plots:",
+
+        # 4.3
+        "4.3 Other Storages and Flexibilities": {
+            "label": "Choose plots for other storage technologies and flexibility options:",
             "plots": [
-                "plot_daily_battery__dispatch",
-                "plot_weekly_battery_dispatch",
-                "plot_monthly_battery_dispatch",
-                "plot_annual_battery_dispatch",
-                "plot_Annual_Dispatch_Base_Scenario_Test",
-                "plot_annual_dispatch_all_technologies",
-                "plot_monthly_V2G_power_dispatch",
-                "plot_monthly_V2G_energy_dispatch",
-                "plot_monthly_V2G_energy_dispatch_High_V2G_Scenario",
-                "plot_monthly_V2G_power_dispatch_High_V2G_Scenario",
-                "plot_monthly_V2G_energy_dispatch_Low_V2G_Scenario",
-                "plot_monthly_V2G_power_dispatch_Low_V2G_Scenario",    
+                # z.B.:
+                # "plot_stacked_bar_RES_capacity",
+                # "plot_RES_curtailment",
+                "FINAL_Total_Flexibility_Needs_Base_Scenario",
+                "FINAL_Total_Flexibility_Needs_All_Scenarios",
+                "FINAL_plot_Flex_Contributions_Base_Scenario",
+                "FINAL_plot_Daily_Flex_Contributions_All_Scenarios",
+                "FINAL_plot_Weekly_Flex_Contributions_All_Scenarios",
+                "FINAL_plot_Annual_Flex_Contributions_All_Scenarios",
             ]
         },
-        "4.3 RES & Flexibilities": {
-            "label": "Choose RES and other Flexibilities Plots:",
+
+        # 4.4
+        "4.4 Cost Sensitivity Analysis": {
+            "label": "Choose cost sensitivity plots:",
             "plots": [
-                "plot_stacked_bar_RES_capacity",
-                "plot_line_RES_capacity_Technologiemix",
-                "plot_stacked_bar_RES_capacity_all_scenarios",
-                "plot_stacked_bar_RES_single_solar_capacity_all_scenarios",
-                "plot_RES_curtailment"
+                # z.B.:
+                # "Cost_Sensitivity_Battery_Capacity",
+                # "Cost_Sensitivity_Curtailment",
+                "FINAL_plot_Sensitivity_Analysis_Base_Scenario",
+                "FINAL_Sensitivity_Analysis_Flex_Needs",
+                "FINAL_Sensitivity_Analysis_Daily_Flex_Contributions",
+                
             ]
         },
-        "4.4 Price Plots": {
-            "label": "Choose Price Plots:",
-            "plots": [ 
-                "plot_price_yealy_new",
-                "plot_price_daily_new",
-                "plot_price_duration_curve",
-                #"plot_price_histogram",
-                #"plot_price_cov",
-                "plot_price_daily_spread",
-            ]
+
+        # 4.5 mit dritter Ebene
+        "4.5 System Impact": {
+            "4.5.1 Price Volatility": {
+                "label": "Choose plots illustrating price volatility (PDC, daily spreads, TB spreads):",
+                "plots": [
+                    # z.B.:
+                    # "plot_price_duration_curve",
+                    # "plot_price_daily_spread",
+                    # "plot_TB_spreads",
+                    "FINAL_plot_price_daily_spread",
+                    "FINAL_plot_TB_spreads",
+                ]
+            },
+            "4.5.2 Total System Costs": {
+                "label": "Choose plots for total system costs:",
+                "plots": [
+                    # z.B.:
+                    # "plot_total_system_costs_all_scenarios",
+                    "FINAL_plot_total_system_costs_delta",
+                ]
+            },
+            "4.5.3 PV and Wind Expansion": {
+                "label": "Choose plots for PV and wind capacity expansion:",
+                "plots": [
+                    # z.B.:
+                    # "plot_stacked_bar_RES_capacity_all_scenarios",
+                    "FINAL_plot_stacked_bar_RES_single_solar_capacity_all_scenarios",
+                ]
+            },
+            "4.5.4 Renewable Curtailment": {
+                "label": "Choose plots for renewable curtailment:",
+                "plots": [
+                    # z.B.:
+                    # "plot_RES_curtailment",
+                    "FINAL_plot_Rel_RES_Curtailment",
+                ]
+            }
         },
-        "4.5 Flexibility Needs": {
-            "label": "Choose Flexibility Needs Plots:",
+
+        # 4.6
+        "4.6 Discussion Plots": {
+            "label": "Choose visualisations from the discussion section:",
             "plots": [
-                "plot_flexbedarf_total",
-                "plot_flexbeiträge",
+                # z.B.:
+                # "Summary_Battery_Capacity_All_Scenarios",
+                # "Summary_System_Impact",
+                "Study_Viewer_MA_Utility_scale_GW",
+                "Study_Viewer_MA_Utility_scale_GWh",
             ]
         }
     },
-    "5. Key Findings & Conclusion": None  
+    "5. Key Findings & Conclusion": None
 }
 
 # ------------------------------
-# Sidebar Navigation
+# Sidebar Navigation (3 Ebenen)
 # ------------------------------
 with st.sidebar:
-    # Hauptkapitel Menü
     main_choice = option_menu(
         menu_title="Thesis Contents",
         options=list(toc.keys()),
-        icons=["book", "lightning", "sliders", "bar-chart", "chat-dots"],  # Icon für neues Kapitel ergänzt
+        icons=["book", "lightning", "sliders", "bar-chart", "chat-dots"],
         default_index=0,
-        styles={
-            "container": {"padding": "0!important", "background-color": "#f0f2f6"},
-            "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#e0e0e0"},
-            "nav-link-selected": {"background-color": "#000000", "font-weight": "bold"},
-        }
     )
 
     sub_choice = None
-    if isinstance(toc[main_choice], dict):  # Falls Unterkapitel existieren
+    sub_sub_choice = None
+
+    if isinstance(toc[main_choice], dict):
         sub_choice = option_menu(
             menu_title=f"{main_choice} – Subsections",
             options=list(toc[main_choice].keys()),
-            icons=["battery-charging", "speedometer2", "graph-up", "currency-dollar", "gear"],  # bleibt so
+            icons=["battery-charging", "ev-front", "layers", "currency-dollar", "graph-up", "star"],
             default_index=0,
-            styles={
-                "container": {"padding": "0!important", "background-color": "#f9fafc"},
-                "nav-link": {"font-size": "14px", "text-align": "left", "margin": "0px", "--hover-color": "#e6e6e6"},
-                "nav-link-selected": {"background-color": "#333333", "font-weight": "bold"},
-            }
         )
+
+        # Falls dritte Ebene existiert
+        node = toc[main_choice][sub_choice]
+        if isinstance(node, dict) and "plots" not in node:
+            sub_sub_choice = option_menu(
+                menu_title=f"{sub_choice} – Subsections",
+                options=list(node.keys()),
+                icons=["chevron-right" for _ in node],
+                default_index=0,
+            )
+
 
 # ------------------------------
 # Plot-Funktion
 # ------------------------------
-def show_plot(plot_name):
+def show_plot(plot_name: str):
     filename = f"{plot_name}.html"
     filepath = os.path.join("ariadne-szenarienreport-pypsa-de-final", "Plots_MA", filename)
     if os.path.exists(filepath):
@@ -128,20 +186,21 @@ def show_plot(plot_name):
             html_content = f.read()
         st.components.v1.html(html_content, height=800, width=1200, scrolling=True)
     else:
-        st.error(f"Die Datei `{filename}` wurde nicht gefunden.") 
+        st.error(f"Die Datei `{filename}` wurde nicht gefunden.")
 
 # ------------------------------
-# Hauptbereich
+# Hilfsfunktion für Auswahl + Download
 # ------------------------------
-if sub_choice:
-    cfg = toc[main_choice][sub_choice]
-    selected_plot = st.selectbox(cfg["label"], cfg["plots"])
-    st.header(f"{main_choice} – {sub_choice}")
+def handle_plot_selection(cfg):
+    """Zeigt Selectbox + Plot + Download-Button, falls Plots konfiguriert sind."""
+    plots = cfg.get("plots", [])
+    if not plots:
+        st.info("No plots configured yet for this subsection.")
+        return
 
-    # Eingebettetes Plotly-HTML (wie bisher)
+    selected_plot = st.selectbox(cfg["label"], plots)
     show_plot(selected_plot)
 
-    # Und zusätzlich: Download-Button (Full Screen im Browser öffnen)
     file_path = os.path.join("ariadne-szenarienreport-pypsa-de-final", "Plots_MA", f"{selected_plot}.html")
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
@@ -151,10 +210,31 @@ if sub_choice:
                 file_name=f"{selected_plot}.html",
                 mime="text/html"
             )
+
+# ------------------------------
+# Hauptbereich
+# ------------------------------
+if sub_choice and sub_sub_choice:
+    # 3. Ebene aktiv (z.B. 4.1.1, 4.1.2, 4.5.1–4.5.4)
+    cfg = toc[main_choice][sub_choice][sub_sub_choice]
+    st.header(f"{main_choice} – {sub_choice} – {sub_sub_choice}")
+    handle_plot_selection(cfg)
+
+elif sub_choice:
+    # 2. Ebene (z.B. 4.2, 4.3, 4.4, 4.6 oder 4.1 / 4.5 ohne 3. Ebene)
+    cfg = toc[main_choice][sub_choice]
+
+    # falls 4.1 oder 4.5 gewählt sind, aber noch keine dritte Ebene (unwahrscheinlich),
+    # nur Hinweis anzeigen
+    if isinstance(cfg, dict) and "plots" not in cfg:
+        st.header(f"{main_choice} – {sub_choice}")
+        st.info("Please select a subsection in the sidebar.")
     else:
-        st.info("Plot-Datei nicht gefunden – bitte generieren oder Pfad prüfen.")
+        st.header(f"{main_choice} – {sub_choice}")
+        handle_plot_selection(cfg)
 
 else:
+    # Kapitel ohne Untermenü (1, 2, 3, 5)
     st.header(main_choice)
 
     if main_choice == "1. Introduction":
@@ -169,34 +249,18 @@ else:
         **Introduction to the thesis topic**
         
         The German energy system is undergoing a fundamental transformation, driven by the urgent need to mitigate climate change.
-        This shift necessitates a transition from conventional power plants to renewable energy sources such as wind and PV.
-        However, this transition also brings new challenges. Unlike traditional power plants, which can be dispatched according to demand, variable renewable energy generation is highly dependent on weather conditions.
-        As a result, the need for flexibility in the power system is increasing significantly\\parencite{Ariadne2025}.
-        
-        Battery storage systems have emerged as a key solution for providing this flexibility.
-        They are widely considered an essential component of a future climate-neutral energy system, particularly one that relies heavily on PV and wind power.
-        In recent years, the demand for battery storage has surged, driven by declining costs and the increasing need for system flexibility.
-        This trend is reflected in the current exponential rise in grid connection requests for utility-scale battery storage \\parencite{Enkhardt2025} with a planned commissioning year before 2030,
-        which now far exceed the projections until 2030 outlined in various studies, as illustrated in Figure \\ref{fig:Entwicklungspfade_Batteriespeicher}.
+        This shift necessitates a transition from conventional fossil fuel power plants to renewable energy sources.
+        Germany reached a renewable electricity share of more than 60% for the first time in 2024 and has set the targets of 
+        achieving an 80% renewable share by 2030 and climate neutrality by 2045. The vast majority of these renewables will be provided by variable
+        renewable energy (VRE) sources, primarily PV and wind power. However, this transition also brings new challenges. 
+        Unlike traditional power plants, which can be dispatched according to demand, variable renewable energy generation is highly
+        dependent on weather conditions. As a result, the need for flexibility in the power system is increasing significantly.
         
         **Problem Statement**
         
-        Existing studies on battery storage deployment present divergent assumptions and results.
-        Some studies lack transparency regarding their cost and technology assumptions, making it difficult to compare findings.
-        This is detailed further in the next chapter. Most of the studies focus on the entire sector-coupled energy system and therefore are not placing battery storage as the central subject of investigation
-        which results in no comprehensive in-depth analysis regarding battery storage deployment.
-        Different types of battery storage, such as stationary large-scale storage, home PV battery storage, and mobile vehicle-to-grid-enabled storage are often not clearly distinguished
-        or comprehensively analyzed. Furthermore, these studies assume a purely market-oriented optimization and neglect potential additional revenue streams for battery storage,
-        such as future capacity markets, ancillary system services, self-consumption optimization, or industrial peak load shaving.
-        Moreover, key performance indicators such as installed power capacity (GW), energy capacity (GWh), or annual discharge (TWh) are often reported inconsistently,
-        which further hinders comparison.
         
-        Furthermore, battery storage technologies compete with other flexibility options in the energy market. 
-        Their future deployment will be influenced by various factors, including the expansion of renewable energy sources and the interactions between different storage and flexibility technologies.
-        Therefore, a comprehensive analysis of these interdependencies is essential. The key drivers for battery storage deployment will be identified and their impact on future deployment scenarios assessed.
-        The key drivers can be found in the next chapter.
         
-        **Goals and Research Questions**
+        **Objectives and Research Question**
         
         The primary goal of this thesis is to outline possible pathways and scenarios for the deployment of battery energy storage systems.
         It aims to explore various battery-related metrics in depth, highlight their interdependencies, and investigate cost sensitivities as well as the elasticity of battery demand.
@@ -434,27 +498,55 @@ Method: In each target year from 2030 on the amount of battery deployment is set
 
 
         """)
-        # Use the expanders below to see concise write-ups that tie directly to your configuration files and data sources.
 
     elif main_choice == "4. Model Results":
         st.markdown("""
-        ## Results
+        ## Model Results
         
-        This section contains the **quantitative results** of the modelling study.  
-        Use the subsections in the sidebar to explore different result categories:
+        Use the subsections in the sidebar to explore:
         
-        - 🔋 **Battery Capacity**: Installed power (GW), energy (GWh), and discharge (TWh)  
-        - 📈 **Battery Dispatch**: Daily, weekly, monthly, and annual utilization  
-        - 🌱 **RES & Flexibilities**: Build-out of renewables and interaction with flexibility options  
-        - 💰 **Price Plots**: Wholesale price dynamics, spreads, and volatility  
-        - 🔧 **Flexibility Needs**: Contribution of BESS, V2G, and other technologies to residual load balancing  
+        - **4.1 Battery Technology Rollout** (Key parameters & dispatch)
+        - **4.2 Vehicle-to-Grid**
+        - **4.3 Other Storages and Flexibilities**
+        - **4.4 Cost Sensitivity Analysis**
+        - **4.5 System Impact** (Price volatility, total costs, RES build-out, curtailment)
+        - **4.6 Key Findings**
         """)
 
     elif main_choice == "5. Key Findings & Conclusion":
         st.markdown("""
-          **Main insights:**
-          **Limitations:**
-          **Conclusion:**
+        The findings of this thesis highlight the central role of utility-scale battery energy storage
+systems in enabling Germany’s transition toward a climate-neutral energy system by
+2045. Using the open-source PyPSA-DE framework, this study systematically analyzed
+the deployment of different battery technologies under various scenarios. The results
+provide a differentiated understanding of how utility-scale batteries interact with other
+flexibility options such as prosumer home batteries and Vehicle-to-Grid systems, and
+how these interactions shape the optimal design of a future renewable-dominated power
+system. The model results demonstrate that batteries will become a core short-term flexibility
+technology, balancing daily fluctuations in renewable generation and contributing
+to price stabilization in the electricity spot markets. While utility-scale batteries will
+become the dominant battery technology in the short- and medium term, it is likely that
+prosumer home batteries and V2G enabled EVs become more relevant in the longer term.
+For the scenario with high V2G penetration, almost no utility-scale get installed as the
+daily flexibility provided by batteries is supplied by V2G and prosumer home batteries.
+The model suggests a significant uptake in utility-scale battery installations between
+2030 and 2035, reaching a combined total of approximately 400–500 GWh of installed
+stationary storage capacity and effective available V2G battery capacity by 2045 across
+most scenarios. The share of this capacity contributed by utility-scale batteries varies
+substantially depending on the respective scenario assumptions. As the model captures
+the full business case of batteries only limited, their current profitability as well as the
+high current grid-connection requests suggests an already earlier uptake of utility-scale
+batteries. The cost sensitivity analysis reveals a strong elasticity of battery deployment
+with respect to capital cost changes. A 50% cost decrease nearly doubles installed energy
+capacity, confirming that the pace of technological cost decline will remain one of the
+most decisive factors for large-scale adoption. Conversely, a 100% cost increase from the
+base scenario projections leads to almost no deployment of utility-scale batteries and
+significantly higher price volatility in 2035 and 2040. This elasticity indicates that other
+flexibility options can effectively substitute utility-scale battery storage for daily balancing
+needs, although this comes at the cost of increased price peaks and volatility. The
+primary substitutes in this context are other battery types, electrolysis, and electricity
+imports and exports. Total system costs can be especially reduced in the High V2G
+scenario as well as in the 50% battery cost reduction case. The High PV and Low PV
+scenarios, as well as the High Cost scenario, result in only minor reductions in total
+system costs.
         """)
-    else:
-        st.info("Please choose a section from the sidebar to view its content.")
